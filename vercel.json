@@ -1,5 +1,11 @@
 {
-   "buildCommand": "cd client && yarn install && yarn build",
+  "builds": [
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build"
+    }
+  ],
+  "buildCommand": "cd client && yarn install && yarn build",
   "outputDirectory": "client/dist",
   "framework": "vite",
   "rewrites": [
@@ -12,5 +18,5 @@
       "destination": "/index.html"
     }
   ]
-      
 }
+
