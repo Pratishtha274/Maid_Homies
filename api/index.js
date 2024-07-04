@@ -22,7 +22,9 @@ app.use('/uploads',express.static(__dirname+'/uploads'))
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173',
-    'https://maid-homies-2.vercel.app'
+    'https://maid-homies-2.vercel.app',
+    'https://maid-homies-2-g5mm1vgp5-pratishtha-sheetals-projects.vercel.app',
+    maid-homies-2-git-main-pratishtha-sheetals-projects.vercel.app
 }))
 
 
