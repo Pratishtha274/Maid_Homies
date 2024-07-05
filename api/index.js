@@ -18,22 +18,10 @@ const bucket = 'pratishtha-booking-app';
 const mime = require('mime-types');
 app.use(express.json());
 app.use(cookieParser());
-app.use('/uploads',express.static(__dirname+'/uploads'));
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://maid-homies.vercel.app',
-  'https://maid-homies-2.vercel.app',
-  'https://maid-homies-2-g5mm1vgp5-pratishtha-sheetals-projects.vercel.app'
-];
+app.use('/uploads', express.static(__dirname+'/uploads'));
 app.use(cors({
   credentials: true,
-  origin: function (origin, callback) {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
+  origin: 'http://127.0.0.1:5173',
 }));
 
 
