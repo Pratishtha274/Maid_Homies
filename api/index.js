@@ -9,6 +9,7 @@ const cookieParser=require('cookie-parser');
 const imageDownloader = require('image-downloader');
 const {S3Client, PutObjectCommand} = require('@aws-sdk/client-s3');
 const app=express();
+const path = require('path');
 const multer=require('multer')
 const fs=require('fs');
 const service=require('./models/service');
@@ -16,6 +17,7 @@ const Booking=require('./models/Booking');
 const bcryptSalt=bcrypt.genSaltSync(10);
 const bucket = 'pratishtha-booking-app';
 const mime = require('mime-types');
+const { ObjectId } = require("mongodb");
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname+'/uploads'));
@@ -23,7 +25,9 @@ app.use(cors({
   credentials: true,
   origin:'http://localhost:5173',
 }));
-
+  
+// Serve the built frontend files from the 'dist' folder
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
 
 
@@ -57,9 +61,14 @@ function getUserDataFromReq(req){
     
 }
 
-app.get('/api/test',(req,res)=> {
-    mongoose.connect(process.env.MONGO_URL);
-    res.json('test ok');
+app.get('/api/test',async (req,res)=> {
+    try{
+        let db = mongoose.createConnection(process.env.MONGO_URL, options);
+        res.json({message:"Connected"});
+    }catch(err){
+        console.error("Error in connecting ", err);
+    }
+
 
 });
 app.post('/api/register', async (req,res) =>{
@@ -106,7 +115,7 @@ app.post('/api/login', async (req,res)=> {
   // Profile route
   
   // Profile route
-app.get('/api/profile', (req, res) => {
+app.get('/profile', (req, res) => {
     mongoose.connect(process.env.MONGO_URL);
     const {token}  = req.cookies;
     if (token) {
@@ -147,7 +156,7 @@ app.post('/api/upload',photosMiddleware.array('photos',100),async (req,res) =>{
    res.json(uploadedFiles);
 });
 
-app.post('/api/services',(req,res)=>{
+app.post('/api/services',async(req,res)=>{
         mongoose.connect(process.env.MONGO_URL);
         const {token}=req.cookies; 
         const{title,address,addedPhotos,description,arrivalTime,departureTime,price,mobile}=req.body; 
@@ -165,7 +174,7 @@ app.post('/api/services',(req,res)=>{
             mobile,
           });
           res.json(serviceDoc);
-        });
+});
 });
 
 app.get('/api/user-services',(req,res) => {
@@ -208,6 +217,7 @@ app.put('/api/services', async(req,res) =>{
 
 app.get('/api/services',async (req,res) =>{
     mongoose.connect(process.env.MONGO_URL);
+   
     res.json(await service.find())
 })
 
@@ -232,4 +242,6 @@ app.get('/api/bookings',async (req,res) =>{
    res.json(await Booking.find({user:userData.id}).populate('service'));
 });
 
-app.listen(4000);
+app.listen(process.env.PORT,()=>{
+    console.log('Server is running on port ', process.env.PORT);
+});
